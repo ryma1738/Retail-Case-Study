@@ -3,6 +3,7 @@ package com.retail.caseStudy.product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Column;
@@ -20,8 +21,13 @@ public class Product {
     @GeneratedValue
     private Long id;
 
+    @NonNull
+    @Column(length = 350)
     private String description;
 
+    private int quantity;
+
+    @NonNull
     private BigDecimal price;
 
     private String image;
