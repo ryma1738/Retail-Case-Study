@@ -30,7 +30,7 @@ public class Product {
     @NonNull
     private BigDecimal price;
 
-    private String image;
+    private String image; //image is stored on front end
 
     @CreationTimestamp
     @Column(updatable = false)
