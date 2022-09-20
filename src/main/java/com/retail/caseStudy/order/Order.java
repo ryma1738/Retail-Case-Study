@@ -2,7 +2,6 @@ package com.retail.caseStudy.order;
 
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.user.User;
-import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -21,14 +20,14 @@ public class Order {
     @GeneratedValue
     private Long id;
 
-    @NonNull
+    @OneToMany(targetEntity = Product.class)
     private List<Product> products;
 
     private OrderStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @NonNull
-    private User userId;
+    private User user;
 
     @NonNull
     private BigDecimal total;

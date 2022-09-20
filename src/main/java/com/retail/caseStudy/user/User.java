@@ -27,10 +27,10 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @OneToOne
+    @OneToMany(targetEntity = Product.class)
     private List<Product> cart;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
     @CreationTimestamp
