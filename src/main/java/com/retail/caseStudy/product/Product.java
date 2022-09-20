@@ -15,8 +15,6 @@ import java.sql.Timestamp;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-
 public class Product {
     @Id
     @GeneratedValue

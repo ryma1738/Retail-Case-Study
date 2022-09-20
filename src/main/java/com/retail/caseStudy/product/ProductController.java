@@ -1,6 +1,7 @@
 package com.retail.caseStudy.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -30,7 +31,7 @@ public class ProductController {
     }
 
     //Needs Authentication
-    @PostMapping("product")
+    @PostMapping("/product")
     public ResponseEntity<Object> createProduct(@RequestBody Product product) {
         Product savedPro = proRep.save(product);
 
@@ -42,5 +43,24 @@ public class ProductController {
         return ResponseEntity.created(location).build();
     }
 
+    //Needs Authentication
+    @PutMapping("/product")
+    public ResponseEntity<Object> updateProduct(@RequestBody Product product) {
+        if (product.getId() == null) return ResponseEntity.badRequest().build();
+        if (proRep.findById(product.getId()).isPresent()) {
+            Product updatedProduct = proRep.save(product);
 
+            return ResponseEntity.ok(updatedProduct);
+        } else return ResponseEntity.notFound().build();
+    }
+
+    //Needs Authentication
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
+        if (proRep.findById(id).isPresent()) {
+            proRep.deleteById(id);
+
+            return ResponseEntity.ok().build();
+        } else return ResponseEntity.notFound().build();
+    }
 }
