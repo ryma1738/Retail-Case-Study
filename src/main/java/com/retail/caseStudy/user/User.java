@@ -28,7 +28,7 @@ public class User {
     private String password;
 
     @OneToMany(targetEntity = Product.class)
-    private List<Product> cart;
+    private List<ItemInCart> cart;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;

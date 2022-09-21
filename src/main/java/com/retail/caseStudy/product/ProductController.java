@@ -1,7 +1,7 @@
 package com.retail.caseStudy.product;
 
+import com.retail.caseStudy.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,7 +27,7 @@ public class ProductController {
         Optional<Product> product = proRep.findById(id);
         if (product.isPresent()) {
             return product.get();
-        } else throw new ProductNotFoundException("id-" + id);
+        } else throw new ProductNotFoundException(id);
     }
 
     //Needs Authentication
