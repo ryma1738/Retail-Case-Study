@@ -24,10 +24,11 @@ public class User {
     @NonNull
     private String email;
 
-    @JsonIgnore
+
     private String password;
 
-    @OneToMany(targetEntity = Product.class)
+    @OneToMany(mappedBy = "user")
+    @Column(name = "cart")
     private List<ItemInCart> cart;
 
     @OneToMany(mappedBy = "user")
@@ -36,4 +37,9 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createdAt;
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
