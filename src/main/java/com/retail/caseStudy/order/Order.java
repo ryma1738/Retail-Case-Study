@@ -8,8 +8,10 @@ import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -21,12 +23,12 @@ public class Order {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(targetEntity = Product.class)
-    private List<Product> products;
+    private HashMap<Long, Integer> products;
 
     private OrderStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name="user_id")
     @NonNull
     private User user;
 

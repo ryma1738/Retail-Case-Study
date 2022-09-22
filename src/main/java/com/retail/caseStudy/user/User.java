@@ -1,6 +1,7 @@
 package com.retail.caseStudy.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.retail.caseStudy.order.Cart;
 import com.retail.caseStudy.order.Order;
 import com.retail.caseStudy.product.Product;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,16 +24,17 @@ public class User {
     private Long id;
 
     @NonNull
+    @Column(unique = true)
     private String email;
-
 
     private String password;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<ItemInCart> cart;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    private Cart cart;
 
-    @OneToMany(mappedBy = "id")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "user")
+    private Set<Order> orders;
 
     @CreationTimestamp
     @Column(updatable = false)
