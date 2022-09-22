@@ -27,11 +27,10 @@ public class User {
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
-    @Column(name = "cart")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<ItemInCart> cart;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "id")
     private List<Order> orders;
 
     @CreationTimestamp
