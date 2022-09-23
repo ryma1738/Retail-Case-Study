@@ -97,12 +97,17 @@ public class UserService {
         }
         cart.setProducts(cartsProducts);
         HashMap<Long, Integer> finalCartsProducts = cartsProducts;
-        BigDecimal subtotal = cartsProducts.keySet().stream().map((p) -> {
-            int q = finalCartsProducts.get(p);
-            return prodRep.findById(p).get().getPrice().multiply(BigDecimal.valueOf(q));
-        }).reduce((total, sum) -> sum.add(total)).get();
+        BigDecimal subtotal;
+        if(finalCartsProducts.isEmpty()) subtotal = BigDecimal.valueOf(0);
+        else {
+            subtotal = cartsProducts.keySet().stream().map((p) -> {
+                int q = finalCartsProducts.get(p);
+                return prodRep.findById(p).get().getPrice().multiply(BigDecimal.valueOf(q));
+            }).reduce((total, sum) -> sum.add(total)).get();
+        }
         cart.setSubtotal(subtotal);
-        cartRep.save(cart);
+        Cart cart1 =cartRep.save(cart);
+        System.out.println(cart1);
         return ResponseEntity.ok().build();
     }
 

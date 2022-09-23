@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
-@NoArgsConstructor
 public class User {
 
     @Id
@@ -29,10 +27,12 @@ public class User {
 
     private String password;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id", referencedColumnName = "id")
     private Cart cart;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<Order> orders;
 
@@ -43,5 +43,57 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+    public User() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", cart_id=" + cart.getId() +
+                ", number of orders=" + orders.size() +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

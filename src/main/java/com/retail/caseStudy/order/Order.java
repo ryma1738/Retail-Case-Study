@@ -1,5 +1,6 @@
 package com.retail.caseStudy.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.user.User;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Order {
     private OrderStatus status;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name="user_id")
     @NonNull
     private User user;
