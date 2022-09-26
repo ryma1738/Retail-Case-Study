@@ -5,6 +5,7 @@ import com.retail.caseStudy.exceptions.ProductNotFoundException;
 import com.retail.caseStudy.exceptions.UserNotFoundException;
 import com.retail.caseStudy.order.Cart;
 import com.retail.caseStudy.order.CartRepository;
+import com.retail.caseStudy.order.OrderRepository;
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.product.ProductRepository;
 import com.retail.caseStudy.util.CartJson;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
 public class UserService {
     @Autowired
     UserRepository userRep;
+
+    @Autowired
+    OrderRepository orderRep;
 
     @Autowired
     ProductRepository prodRep;
@@ -46,6 +51,9 @@ public class UserService {
     public CartJson getUsersCart(Long id) {
         Optional<User> getUser = userRep.findById(id);
         if (getUser.isPresent()) {
+            if(getUser.get().getCart().getProducts().isEmpty()) {
+                return new CartJson(new ArrayList<UsersCartInfo>(), BigDecimal.valueOf(0));
+            }
             HashMap<Long, Integer> itemsById = getUser.get().getCart().getProducts();
             List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
                 try {
@@ -88,9 +96,14 @@ public class UserService {
         } else throw new UserNotFoundException(user.getId());
     }
 
+    @Transactional
     public ResponseEntity<Object> deleteUser(Long id) {
-        if(userRep.findById(id).isPresent()){
-            userRep.deleteById(id);
+        Optional<User> confirm = userRep.findById(id);
+        if(confirm.isPresent()){
+            User user = confirm.get();
+            cartRep.delete(user.getCart());
+            user.getOrders().stream().forEach(order -> orderRep.delete(order));
+            userRep.delete(user);
             return ResponseEntity.ok().build();
         } else throw new UserNotFoundException(id);
     }

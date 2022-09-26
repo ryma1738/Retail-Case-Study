@@ -121,7 +121,7 @@ public class OrderController {
         Optional<Order> orderConfirm = orderRep.findById(orderId);
         if(!orderConfirm.isPresent()) throw new OrderNotFoundException(orderId);
         Order order = orderConfirm.get();
-        if(!order.getId().equals(userId))
+        if(!order.getUser().getId().equals(userId))
             throw new BadRequestException("ERROR: This order does not belong to this user.");
         return order;
     }
