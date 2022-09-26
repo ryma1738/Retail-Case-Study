@@ -1,21 +1,13 @@
 package com.retail.caseStudy.user;
 
-import com.retail.caseStudy.exceptions.BadRequestException;
-import com.retail.caseStudy.exceptions.ProductNotFoundException;
-import com.retail.caseStudy.exceptions.UserNotFoundException;
-import com.retail.caseStudy.order.Cart;
-import com.retail.caseStudy.order.CartRepository;
 import com.retail.caseStudy.product.Product;
-import com.retail.caseStudy.product.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.net.URI;
+
+
 import java.util.*;
 
 @RestController
@@ -37,9 +29,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cart")
-    public Cart getUsersCart(@PathVariable long id) {
+    public HashMap<Product, Integer> getUsersCart(@PathVariable long id) {
         return userService.getUsersCart(id);
     }
+
+
+//    @GetMapping("/{email}/{password}")
+//    public ResponseEntity<Object> login(@PathVariable String email, @PathVariable String password) {
+//
+//    }
 
     @PostMapping("")
     public ResponseEntity<Object> createUser(@RequestBody User user) {
@@ -57,7 +55,6 @@ public class UserController {
     }
 
     //Authentication
-    @Transactional
     @PutMapping("/{id}/cart/{quantity}")
     public ResponseEntity<Object> updateCart(@PathVariable long id,
                                             @RequestBody Product product,

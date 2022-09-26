@@ -45,11 +45,7 @@ public class OrderController {
     @GetMapping("/{userId}/{orderId}")
     public ResponseEntity<Object> getUsersOrder(@PathVariable Long userId, @PathVariable Long orderId) {
         User user = confirmUser(userId);
-        Optional<Order> orderConfirm = orderRep.findById(orderId);
-        if(!orderConfirm.isPresent()) throw new OrderNotFoundException(orderId);
-        Order order = orderConfirm.get();
-        if(!order.getId().equals(user.getId()))
-            throw new BadRequestException("ERROR: This order does not belong to this user.");
+        Order order = confirmOrderUserRelationship(userId, orderId);
         return ResponseEntity.ok(order);
     }
 
@@ -88,10 +84,45 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
+    @PutMapping("/{userId}/{orderId}/{status}")
+    public ResponseEntity<Object> updateStatus(@PathVariable Long userId,
+                                               @PathVariable Long orderId,
+                                               @PathVariable OrderStatus status) {
+        confirmUser(userId);
+        Order order = confirmOrderUserRelationship(userId, orderId);
+        if (order.getStatus().equals(OrderStatus.CANCELED))
+            throw new BadRequestException("You can not modify a canceled order.");
+        order.setStatus(status);
+        orderRep.save(order);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{userId}/{orderId}")
+    public ResponseEntity<Object> cancelOrder(@PathVariable Long userId, @PathVariable Long orderId) {
+        User user = confirmUser(userId);
+        Order order = confirmOrderUserRelationship(userId, orderId);
+        if (order.getStatus().equals(OrderStatus.SHIPPING) || order.getStatus().equals(OrderStatus.COMPLETE))
+            throw new BadRequestException("You can not cancel " +
+                    "an order that has already shipped. Please contact site Support");
+        order.setStatus(OrderStatus.CANCELED);
+        orderRep.save(order);
+        //refund user etc.
+        return ResponseEntity.ok().build();
+
+    }
+
     private User confirmUser(Long userId) {
         Optional<User> confirm = userRep.findById(userId);
         if(confirm.isPresent()) return confirm.get();
         else throw new UserNotFoundException(userId);
     }
 
+    private Order confirmOrderUserRelationship(Long userId, Long orderId) {
+        Optional<Order> orderConfirm = orderRep.findById(orderId);
+        if(!orderConfirm.isPresent()) throw new OrderNotFoundException(orderId);
+        Order order = orderConfirm.get();
+        if(!order.getId().equals(userId))
+            throw new BadRequestException("ERROR: This order does not belong to this user.");
+        return order;
+    }
 }

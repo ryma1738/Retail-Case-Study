@@ -12,11 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -39,9 +41,23 @@ public class UserService {
         else throw new UserNotFoundException(id);
     }
 
-    public Cart getUsersCart(Long id) {
+    public HashMap<Product, Integer> getUsersCart(Long id) {
         Optional<User> getUser = userRep.findById(id);
-        if (getUser.isPresent()) return getUser.get().getCart();
+        if (getUser.isPresent()) {
+            HashMap<Long, Integer> itemsById = getUser.get().getCart().getProducts();
+            List<Product> products = itemsById.keySet().stream().map(pId -> {
+                try {
+                    Product product = prodRep.findById(pId).get();
+                    return product;
+                } catch(Exception e) {throw new ProductNotFoundException(pId);}
+            }).collect(Collectors.toList());
+            HashMap<Product, Integer> cart = new HashMap<>();
+            for (Product product : products) {
+                int quantity = itemsById.get(product.getId());
+                cart.put(product, quantity);
+            }
+            return cart;
+        }
         else throw new UserNotFoundException(id);
     }
 
@@ -73,6 +89,7 @@ public class UserService {
         } else throw new UserNotFoundException(id);
     }
 
+    @Transactional
     public ResponseEntity<Object> updateUsersCart(long id, Product product, int quantity) {
         if (!userRep.findById(id).isPresent()) throw new UserNotFoundException(id);
         Optional<Product> actualProduct = prodRep.findById(product.getId());
