@@ -2,6 +2,8 @@ package com.retail.caseStudy.user;
 
 import com.retail.caseStudy.product.Product;
 
+import com.retail.caseStudy.util.CartJson;
+import com.retail.caseStudy.util.UsersCartInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +31,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cart")
-    public HashMap<Product, Integer> getUsersCart(@PathVariable long id) {
+    public CartJson getUsersCart(@PathVariable long id) {
         return userService.getUsersCart(id);
     }
-
 
 //    @GetMapping("/{email}/{password}")
 //    public ResponseEntity<Object> login(@PathVariable String email, @PathVariable String password) {

@@ -7,6 +7,8 @@ import com.retail.caseStudy.order.Cart;
 import com.retail.caseStudy.order.CartRepository;
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.product.ProductRepository;
+import com.retail.caseStudy.util.CartJson;
+import com.retail.caseStudy.util.UsersCartInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,22 +43,26 @@ public class UserService {
         else throw new UserNotFoundException(id);
     }
 
-    public HashMap<Product, Integer> getUsersCart(Long id) {
+    public CartJson getUsersCart(Long id) {
         Optional<User> getUser = userRep.findById(id);
         if (getUser.isPresent()) {
             HashMap<Long, Integer> itemsById = getUser.get().getCart().getProducts();
-            List<Product> products = itemsById.keySet().stream().map(pId -> {
+            List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
                 try {
                     Product product = prodRep.findById(pId).get();
-                    return product;
+                    int quantity = itemsById.get(product.getId());
+                    return new UsersCartInfo(product, quantity);
                 } catch(Exception e) {throw new ProductNotFoundException(pId);}
             }).collect(Collectors.toList());
-            HashMap<Product, Integer> cart = new HashMap<>();
-            for (Product product : products) {
-                int quantity = itemsById.get(product.getId());
-                cart.put(product, quantity);
-            }
-            return cart;
+            BigDecimal subtotal = cart.stream().map(cartInfo -> {
+                BigDecimal itemPrice = cartInfo.getProduct().getPrice();
+                itemPrice = itemPrice.multiply(BigDecimal.valueOf(cartInfo.getQuantity()));
+                System.out.println(cartInfo.getQuantity());
+                System.out.println(itemPrice);
+                return itemPrice;
+            }).reduce((price, sum) -> price.add(sum)).get();
+            //cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            return new CartJson(cart, subtotal);
         }
         else throw new UserNotFoundException(id);
     }
