@@ -8,6 +8,9 @@ import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.product.ProductRepository;
 import com.retail.caseStudy.user.User;
 import com.retail.caseStudy.user.UserRepository;
+import com.retail.caseStudy.util.CartJson;
+import com.retail.caseStudy.util.OrderJson;
+import com.retail.caseStudy.util.UsersCartInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +20,10 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/order")
@@ -31,22 +36,43 @@ public class OrderController {
     UserRepository userRep;
 
     @Autowired
+    ProductRepository prodRep;
+
+    @Autowired
     CartRepository cartRep;
 
     @Autowired
     OrderRepository orderRep;
 
     @GetMapping("/{userId}")
-    public Set<Order> getUsersOrders(@PathVariable Long userId) {
+    public ResponseEntity<Object> getUsersOrders(@PathVariable Long userId) {
         User user = confirmUser(userId);
-        return user.getOrders();
+        List<OrderJson> orders = user.getOrders().stream().map(order -> {
+            HashMap<Long, Integer> itemsById = order.getProducts();
+            List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
+                Product product = prodRep.findById(pId).get();
+                int quantity = itemsById.get(product.getId());
+                return new UsersCartInfo(product, quantity);
+            }).collect(Collectors.toList());
+            return new OrderJson(order.getId(), cart, order.getStatus(),
+                    order.getTotal(), order.getCreatedAt());
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{userId}/{orderId}")
     public ResponseEntity<Object> getUsersOrder(@PathVariable Long userId, @PathVariable Long orderId) {
         User user = confirmUser(userId);
         Order order = confirmOrderUserRelationship(userId, orderId);
-        return ResponseEntity.ok(order);
+        HashMap<Long, Integer> itemsById = order.getProducts();
+        List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
+            Product product = prodRep.findById(pId).get();
+            int quantity = itemsById.get(product.getId());
+            return new UsersCartInfo(product, quantity);
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(new OrderJson(order.getId(), cart, order.getStatus(),
+                order.getTotal(), order.getCreatedAt()));
+
     }
 
     @Transactional
