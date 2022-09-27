@@ -13,6 +13,7 @@ import com.retail.caseStudy.util.OrderJson;
 import com.retail.caseStudy.util.UsersCartInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -44,9 +45,9 @@ public class OrderController {
     @Autowired
     OrderRepository orderRep;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUsersOrders(@PathVariable Long userId) {
-        User user = confirmUser(userId);
+    @GetMapping("")
+    public ResponseEntity<Object> getUsersOrders() {
+        User user = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<OrderJson> orders = user.getOrders().stream().map(order -> {
             HashMap<Long, Integer> itemsById = order.getProducts();
             List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
@@ -60,10 +61,10 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/{userId}/{orderId}")
-    public ResponseEntity<Object> getUsersOrder(@PathVariable Long userId, @PathVariable Long orderId) {
-        User user = confirmUser(userId);
-        Order order = confirmOrderUserRelationship(userId, orderId);
+    @GetMapping("/{orderId}")
+    public ResponseEntity<Object> getUsersOrder( @PathVariable Long orderId) {
+        User user = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Order order = confirmOrderUserRelationship(user.getId(), orderId);
         HashMap<Long, Integer> itemsById = order.getProducts();
         List<UsersCartInfo> cart = itemsById.keySet().stream().map(pId -> {
             Product product = prodRep.findById(pId).get();
@@ -72,14 +73,13 @@ public class OrderController {
         }).collect(Collectors.toList());
         return ResponseEntity.ok(new OrderJson(order.getId(), cart, order.getStatus(),
                 order.getTotal(), order.getCreatedAt()));
-
     }
 
     @Transactional
-    @PostMapping("/{userId}")
-    public ResponseEntity<Object> createOrder(@PathVariable Long userId) {
+    @PostMapping("")
+    public ResponseEntity<Object> createOrder() {
         //would also confirm payment has been received here if I was adding a payment feature.
-        User user = confirmUser(userId);
+        User user = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Cart cart = user.getCart();
         if (cart.getProducts().isEmpty())
             throw new BadRequestException("You must have items in your cart to create an order.");
@@ -110,37 +110,27 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{userId}/{orderId}/{status}")
-    public ResponseEntity<Object> updateStatus(@PathVariable Long userId,
-                                               @PathVariable Long orderId,
+    @PutMapping("/{orderId}/{status}")
+    public ResponseEntity<Object> updateStatus(@PathVariable Long orderId,
                                                @PathVariable OrderStatus status) {
-        confirmUser(userId);
+        Long userId = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         Order order = confirmOrderUserRelationship(userId, orderId);
         if (order.getStatus().equals(OrderStatus.CANCELED))
             throw new BadRequestException("You can not modify a canceled order.");
+        if(status.equals(OrderStatus.CANCELED)) {
+            if (order.getStatus().equals(OrderStatus.SHIPPING) || order.getStatus().equals(OrderStatus.COMPLETE))
+                throw new BadRequestException("You can not cancel " +
+                        "an order that has already shipped. Please contact site Support");
+        }
         order.setStatus(status);
         orderRep.save(order);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{userId}/{orderId}")
-    public ResponseEntity<Object> cancelOrder(@PathVariable Long userId, @PathVariable Long orderId) {
-        User user = confirmUser(userId);
-        Order order = confirmOrderUserRelationship(userId, orderId);
-        if (order.getStatus().equals(OrderStatus.SHIPPING) || order.getStatus().equals(OrderStatus.COMPLETE))
-            throw new BadRequestException("You can not cancel " +
-                    "an order that has already shipped. Please contact site Support");
-        order.setStatus(OrderStatus.CANCELED);
-        orderRep.save(order);
-        //refund user etc.
-        return ResponseEntity.ok().build();
-
-    }
-
-    private User confirmUser(Long userId) {
-        Optional<User> confirm = userRep.findById(userId);
+    private User confirmUser(String email) {
+        Optional<User> confirm = userRep.findByEmail(email);
         if(confirm.isPresent()) return confirm.get();
-        else throw new UserNotFoundException(userId);
+        else throw new UserNotFoundException();
     }
 
     private Order confirmOrderUserRelationship(Long userId, Long orderId) {

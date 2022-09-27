@@ -8,24 +8,23 @@ import com.retail.caseStudy.order.CartRepository;
 import com.retail.caseStudy.order.OrderRepository;
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.product.ProductRepository;
+import com.retail.caseStudy.security.JWTUtil;
 import com.retail.caseStudy.util.CartJson;
 import com.retail.caseStudy.util.UsersCartInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService  {
     @Autowired
     UserRepository userRep;
 
@@ -38,20 +37,26 @@ public class UserService {
     @Autowired
     CartRepository cartRep;
 
+    @Autowired private JWTUtil jwtUtil;
+    @Autowired private AuthenticationManager authManager;
+    @Autowired private PasswordEncoder passwordEncoder;
+
     public List<User> getAllUsers() {
         return userRep.findAll();
     }
 
-    public User getUserById(Long id) {
-        Optional<User> user = userRep.findById(id);
+    public User getUserById() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> user = userRep.findByEmail(email);
         if (user.isPresent()) return user.get();
-        else throw new UserNotFoundException(id);
+        else throw new UserNotFoundException();
     }
 
-    public CartJson getUsersCart(Long id) {
-        Optional<User> getUser = userRep.findById(id);
+    public CartJson getUsersCart() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> getUser = userRep.findByEmail(email);
         if (getUser.isPresent()) {
-            if(getUser.get().getCart().getProducts().isEmpty()) {
+            if(getUser.get().getCart().getProducts() == null || getUser.get().getCart().getProducts().isEmpty()) {
                 return new CartJson(new ArrayList<UsersCartInfo>(), BigDecimal.valueOf(0));
             }
             HashMap<Long, Integer> itemsById = getUser.get().getCart().getProducts();
@@ -65,52 +70,53 @@ public class UserService {
             BigDecimal subtotal = cart.stream().map(cartInfo -> {
                 BigDecimal itemPrice = cartInfo.getProduct().getPrice();
                 itemPrice = itemPrice.multiply(BigDecimal.valueOf(cartInfo.getQuantity()));
-                System.out.println(cartInfo.getQuantity());
-                System.out.println(itemPrice);
                 return itemPrice;
             }).reduce((price, sum) -> price.add(sum)).get();
-            //cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
             return new CartJson(cart, subtotal);
         }
-        else throw new UserNotFoundException(id);
+        else throw new UserNotFoundException();
     }
 
-    public ResponseEntity<Object> createUser(User user) {
+    @Transactional
+    public Map<String, String> createUser(LoginCredentials loginInfo) {
+        User user = new User();
+        String encodedPass = passwordEncoder.encode(loginInfo.getPassword());
+        user.setPassword(encodedPass);
+        user.setEmail(loginInfo.getEmail());
         User savedUser = userRep.save(user);
+        String token = jwtUtil.generateToken(user.getEmail());
+
         Cart savedCart = cartRep.save(new Cart(savedUser));
         savedUser.setCart(savedCart);
         userRep.save(savedUser);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedUser.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return Collections.singletonMap("jwt-token", token);
     }
 
     public ResponseEntity<Object> updateUser(User user) {
         if(userRep.findById(user.getId()).isPresent()) {
             userRep.save(user);
             return ResponseEntity.ok().build();
-        } else throw new UserNotFoundException(user.getId());
+        } else throw new UserNotFoundException();
     }
 
     @Transactional
-    public ResponseEntity<Object> deleteUser(Long id) {
-        Optional<User> confirm = userRep.findById(id);
+    public ResponseEntity<Object> deleteUser() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> confirm = userRep.findByEmail(email);
         if(confirm.isPresent()){
             User user = confirm.get();
             cartRep.delete(user.getCart());
             user.getOrders().stream().forEach(order -> orderRep.delete(order));
             userRep.delete(user);
             return ResponseEntity.ok().build();
-        } else throw new UserNotFoundException(id);
+        } else throw new UserNotFoundException();
     }
 
     @Transactional
-    public ResponseEntity<Object> updateUsersCart(long id, Product product, int quantity) {
-        if (!userRep.findById(id).isPresent()) throw new UserNotFoundException(id);
+    public ResponseEntity<Object> updateUsersCart(Product product, int quantity) {
+        if (!userRep.findByEmail((String) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).isPresent()) throw new UserNotFoundException();
         Optional<Product> actualProduct = prodRep.findById(product.getId());
         if(actualProduct.isPresent()) {
             if(!product.equals(actualProduct.get()))
@@ -119,7 +125,7 @@ public class UserService {
         } else throw new ProductNotFoundException(product.getId());
         if (product.getQuantity() < quantity) throw new BadRequestException(
                 "You can not add more items to you cart than are currently available: " + product.getQuantity());
-        User user = userRep.findById(id).get();
+        User user = userRep.findByEmail((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get();
         Cart cart = user.getCart();
         HashMap<Long, Integer> cartsProducts = cart.getProducts();
         if(cartsProducts == null)  cartsProducts = new HashMap<Long, Integer>();
@@ -146,5 +152,6 @@ public class UserService {
         System.out.println(cart1);
         return ResponseEntity.ok().build();
     }
+
 
 }

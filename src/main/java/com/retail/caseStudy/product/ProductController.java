@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     //Needs Authentication
-    @PostMapping("/product")
+    @PostMapping("/admin/product")
     public ResponseEntity<Object> createProduct(@RequestBody Product product) {
         Product savedPro = proRep.save(product);
 
@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     //Needs Authentication
-    @PutMapping("/product")
+    @PutMapping("/admin/product")
     public ResponseEntity<Object> updateProduct(@RequestBody Product product) {
         if (product.getId() == null) return ResponseEntity.badRequest().build();
         if (proRep.findById(product.getId()).isPresent()) {
@@ -55,7 +55,7 @@ public class ProductController {
     }
 
     //Needs Authentication
-    @DeleteMapping("/product/{id}")
+    @DeleteMapping("/admin/product/{id}")
     public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
         if (proRep.findById(id).isPresent()) {
             proRep.deleteById(id);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.retail.caseStudy.order.Cart;
 import com.retail.caseStudy.order.Order;
 import com.retail.caseStudy.product.Product;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -37,6 +38,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Order> orders;
 
+    @JsonIgnore
+    private String role = "user";
+
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createdAt;
@@ -69,6 +73,10 @@ public class User {
 
     public Timestamp getCreatedAt() {
         return createdAt;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public void setEmail(String email) {
