@@ -1,0 +1,63 @@
+:root {
+  --black: #1E1A1D;
+  --light-blue: #0097d3;
+  --mint: #00c1a4;
+  --purple: #9800d0;
+  --white: #C1D2D8;
+  --gradient: linear-gradient(13deg,
+      rgba(0, 193, 164, 1) 10%,
+      rgba(0, 151, 211, 1) 30%,
+      rgba(201, 51, 255, 1) 64%);
+      --gradient2: linear-gradient(13deg,
+            rgba(0, 193, 164, 1) 5%,
+            rgba(0, 151, 211, 1) 70%);
+}
+
+body {
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  scroll-behavior: smooth;
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.nav-bar {
+  border-bottom: 7px solid;
+  border-image: var(--gradient) 1;
+}
+
+.vermin {
+  font-family: 'Vermin Vibes';
+}
+
+.lobster {
+  font-family: 'Lobster'
+}
+
+.no-link {
+  outline: none;
+  border: none;
+  text-decoration: none;
+  color: transparent;
+} 
+.fs-100 {
+  font-size: 6vw;
+}
+
+.gradient-text-shadow {
+  color: transparent;
+  background: var(--gradient);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: var(--white) -4px -2px 0px;
+}
+
+.gradient-text {
+  color: transparent;
+  background: var(--gradient2);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-shadow {
+
+}

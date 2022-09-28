@@ -76,7 +76,7 @@ public class OrderController {
     }
 
     @Transactional
-    @PostMapping("")
+    @PostMapping("")  //need to reduce product quantity on order
     public ResponseEntity<Object> createOrder() {
         //would also confirm payment has been received here if I was adding a payment feature.
         User user = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -110,7 +110,7 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{orderId}/{status}")
+    @PutMapping("/{orderId}/{status}") //need to reset product quantity on cancel
     public ResponseEntity<Object> updateStatus(@PathVariable Long orderId,
                                                @PathVariable OrderStatus status) {
         Long userId = confirmUser((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
