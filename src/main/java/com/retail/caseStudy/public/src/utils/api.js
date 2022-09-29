@@ -35,10 +35,24 @@ export const signup = (email, password, phoneNumber) => {
 }
 
 export const forgot = (email, phoneNumber) => {
-    return fetch('/api/v1/user/forgot/' + email + "/" + phoneNumber, {
+    return fetch('/api/v1/user/forgot/' + email + '/' + phoneNumber, {
         method: "GET",
         headers: {
             'content-type': 'application/json'
         }
+    })
+}
+
+export const resetPassword = (userId, key, password) => {
+    return fetch('/api/v1/user/forgot/', {
+        method: "POST",
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            userId: userId,
+            key: key,
+            password: password
+        })
     })
 }
