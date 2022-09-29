@@ -12,7 +12,7 @@ public class BadRequestAdvice {
     @ResponseBody
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String badRequestHandler(BadRequestException ex) {
-        return ex.getMessage();
+    ErrorMessage badRequestHandler(BadRequestException ex) {
+        return new ErrorMessage(ex.getMessage());
     }
 }

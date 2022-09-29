@@ -39,7 +39,11 @@ public class User {
     private Set<Order> orders;
 
     @JsonIgnore
+    @Column(updatable = false)
     private String role = "user";
+
+    @NonNull
+    private String phoneNumber;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -67,6 +71,10 @@ public class User {
         return cart;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public Set<Order> getOrders() {
         return orders;
     }
@@ -89,6 +97,10 @@ public class User {
 
     public void setCart(Cart cart) {
         this.cart = cart;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public void setOrders(Set<Order> orders) {

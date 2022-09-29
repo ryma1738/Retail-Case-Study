@@ -4,7 +4,7 @@ import com.retail.caseStudy.exceptions.BadRequestException;
 import com.retail.caseStudy.product.Product;
 
 import com.retail.caseStudy.security.JWTUtil;
-import com.retail.caseStudy.util.CartJson;
+import com.retail.caseStudy.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,14 +35,24 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/user/forgot/{email}/{phoneNumber}")
+    public ResponseEntity<Object> checkForgottenUser(@PathVariable String email, @PathVariable String phoneNumber) {
+        return userService.forgottenUserCheck(email, phoneNumber);
+    }
+
+    @PostMapping("/user/forgot")
+    public ResponseEntity<Object> updatePassword(@RequestBody ChangePasswordJson info) {
+        return userService.resetPassword(info);
+    }
+
     @GetMapping("/user/cart")
     public CartJson getUsersCart() {
         return userService.getUsersCart();
     }
 
     @PostMapping("/user/create")
-    public Map<String, String> createUser(@RequestBody LoginCredentials loginInfo) {
-        return userService.createUser(loginInfo);
+    public Map<String, String> createUser(@RequestBody SignupCredentials signupInfo) {
+        return userService.createUser(signupInfo);
     }
 
     @PutMapping("/user")
@@ -67,12 +77,11 @@ public class UserController {
         try {
             UsernamePasswordAuthenticationToken authInputToken =
                     new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
-            System.out.println(authInputToken);
             authManager.authenticate(authInputToken);
 
             String token = jwtUtil.generateToken(body.getEmail());
 
-            return Collections.singletonMap("jwt-token", token);
+            return Collections.singletonMap("jwtToken", token);
         }catch (AuthenticationException authExc){
             throw new BadRequestException("Invalid Login Credentials");
         }

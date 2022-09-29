@@ -12,7 +12,7 @@ public class ProductNotFoundAdvice {
     @ResponseBody
     @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String userNotFoundHandler(ProductNotFoundException ex) {
-        return ex.getMessage();
+    ErrorMessage userNotFoundHandler(ProductNotFoundException ex) {
+        return new ErrorMessage(ex.getMessage());
     }
 }

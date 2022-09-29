@@ -9,8 +9,7 @@ import com.retail.caseStudy.order.OrderRepository;
 import com.retail.caseStudy.product.Product;
 import com.retail.caseStudy.product.ProductRepository;
 import com.retail.caseStudy.security.JWTUtil;
-import com.retail.caseStudy.util.CartJson;
-import com.retail.caseStudy.util.UsersCartInfo;
+import com.retail.caseStudy.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,14 +27,13 @@ public class UserService  {
     @Autowired
     UserRepository userRep;
 
-    @Autowired
-    OrderRepository orderRep;
+    @Autowired private OrderRepository orderRep;
 
-    @Autowired
-    ProductRepository prodRep;
+    @Autowired private ProductRepository prodRep;
 
-    @Autowired
-    CartRepository cartRep;
+    @Autowired private CartRepository cartRep;
+
+    @Autowired private ForgotPasswordRepository forgotRep;
 
     @Autowired private JWTUtil jwtUtil;
     @Autowired private AuthenticationManager authManager;
@@ -50,6 +48,38 @@ public class UserService  {
         Optional<User> user = userRep.findByEmail(email);
         if (user.isPresent()) return user.get();
         else throw new UserNotFoundException();
+    }
+
+    public ResponseEntity<Object> forgottenUserCheck(String email, String phoneNumber) {
+        Optional<User> userInfo = userRep.findByEmail(email);
+        if (userInfo.isPresent()) {
+            String phone = userInfo.get().getPhoneNumber();
+            if (phone.equals(phoneNumber)) {
+                ForgotPasswordJson json = new ForgotPasswordJson(userInfo.get().getId(),
+                        (int) Math.round(Math.random() * 1000));
+                ForgotPassword sql = new ForgotPassword(userInfo.get().getId(), json.getKey());
+                ForgotPassword savedSQL = forgotRep.save(sql);
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        forgotRep.delete(savedSQL);
+                    }
+                }, 300000);
+                return ResponseEntity.ok(json);
+            } else throw new BadRequestException("This is the wrong phone number for this user!");
+        } else throw new UserNotFoundException();
+    }
+
+    public ResponseEntity<Object> resetPassword(ChangePasswordJson info) {
+        Optional<ForgotPassword> confirm = forgotRep.findByKeyValue(info.getKey());
+        if (confirm.isPresent()){
+            forgotRep.delete(confirm.get());
+            User user = userRep.findById(info.getUserId()).get();
+            user.setPassword(passwordEncoder.encode(info.getPassword()));
+            User savedUser = userRep.save(user);
+            return ResponseEntity.ok().build();
+        } else throw new BadRequestException("This user does not have an active request to update password.");
     }
 
     public CartJson getUsersCart() {
@@ -78,11 +108,12 @@ public class UserService  {
     }
 
     @Transactional
-    public Map<String, String> createUser(LoginCredentials loginInfo) {
+    public Map<String, String> createUser(SignupCredentials signupInfo) {
         User user = new User();
-        String encodedPass = passwordEncoder.encode(loginInfo.getPassword());
+        String encodedPass = passwordEncoder.encode(signupInfo.getPassword());
         user.setPassword(encodedPass);
-        user.setEmail(loginInfo.getEmail());
+        user.setEmail(signupInfo.getEmail());
+        user.setPhoneNumber(signupInfo.getPhoneNumber());
         User savedUser = userRep.save(user);
         String token = jwtUtil.generateToken(user.getEmail());
 
@@ -90,7 +121,7 @@ public class UserService  {
         savedUser.setCart(savedCart);
         userRep.save(savedUser);
 
-        return Collections.singletonMap("jwt-token", token);
+        return Collections.singletonMap("jwtToken", token);
     }
 
     public ResponseEntity<Object> updateUser(User user) {

@@ -1,4 +1,4 @@
-package com.retail.caseStudy.user;
+package com.retail.caseStudy.util;
 
 
 import lombok.AllArgsConstructor;
@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginCredentials {
+public class SignupCredentials {
 
     private String email;
     private String password;
+    private String phoneNumber;
 }

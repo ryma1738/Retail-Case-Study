@@ -12,7 +12,7 @@
             rgba(0, 193, 164, 1) 5%,
             rgba(0, 151, 211, 1) 70%);
 }
-
+/* General Styles */
 body {
   font-family: 'Arial Rounded MT Bold', sans-serif;
   scroll-behavior: smooth;
@@ -33,12 +33,72 @@ body {
   font-family: 'Lobster'
 }
 
+.noButton {
+  outline: none;
+  border: none;
+  background: none;
+  padding: 0px;
+}
+
+.button {
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: 3px solid var(--mint);
+  box-shadow: 1px 1px 5px var(--light-blue);
+  outline: none;
+  color: var(--white);
+  background-color: var(--black);
+}
+
+.button:hover {
+  box-shadow: 1px 1px 10px var(--light-blue);
+}
+
+.button:active {
+  outline: none;
+  box-shadow: none;
+}
+
+input,
+textarea,
+select {
+  outline: none;
+  border-radius: 5px;
+  border: 3px solid;
+  border-image: var(--gradient2) 1;
+  background-color: var(--black);
+  color: var(--white);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 1px 1px 5px var(--mint);
+}
+
+input:invalid:focus,
+textarea:invalid:focus,
+select:invalid:focus {
+  border: 3px solid var(--purple);
+  box-shadow: 1px 1px 5px var(--purple);
+}
+
+.text-link {
+  color: var(--mint);
+}
+
+.text-link:hover {
+  text-decoration: none;
+  color: var(--light-blue);
+}
+
 .no-link {
   outline: none;
   border: none;
   text-decoration: none;
   color: transparent;
 } 
+
 .fs-100 {
   font-size: 6vw;
 }
@@ -48,7 +108,15 @@ body {
   background: var(--gradient);
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: var(--white) -4px -2px 0px;
+  text-shadow: var(--white) -5px -4px 0px; 
+}
+
+.gradient-text-shadow:hover {
+  text-shadow: var(--white) -3px -3px 0px;
+}
+
+.gradient-text-shadow:active {
+  text-shadow: var(--white) 0px 0px 0px;
 }
 
 .gradient-text {
@@ -58,6 +126,18 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.gradient-shadow {
+/* Login / Signup Styles */
+.loginDiv {
+  box-shadow: 1px 0px 10px var(--light-blue);
+  border: 5px solid;
+  border-image: var(--gradient2) 1;
+  border-radius: 10px;
+}
 
+.loginDiv input {
+  width: 100%;
+}
+
+.navbarText {
+  font-size: 1.6vw;
 }

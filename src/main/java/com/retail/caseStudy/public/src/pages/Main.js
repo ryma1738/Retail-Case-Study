@@ -4,6 +4,7 @@ import {Container, Row, Col} from 'react-bootstrap';
 
 function Main() {
     const [products, setProducts] = useState();
+    const [productsHTML, setProductsHTML] = useState();
 
     async function initialLoad() {
         const response = await getAllProducts();
