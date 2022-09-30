@@ -35,7 +35,7 @@ function Navigator() {
                 
                 <Col xs={7} className="">
                     <a href="/" className="no-link">
-                    <h1 className="vermin fs-100 gradient-text-shadow m-0">CaseStudy. Store</h1>
+                    <h1 className="vermin fs-100 gradient-text-shadow-button m-0">CaseStudy. Store</h1>
                     </a>
                 </Col>
                 

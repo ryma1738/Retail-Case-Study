@@ -22,7 +22,10 @@ public class Product {
     private Long id;
 
     @NonNull
-    @Column(length = 350)
+    private String name;
+
+    @NonNull
+    @Column(length = 1000)
     private String description;
 
     private int quantity;

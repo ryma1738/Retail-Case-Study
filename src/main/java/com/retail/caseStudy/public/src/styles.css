@@ -54,6 +54,11 @@ body {
   box-shadow: 1px 1px 10px var(--light-blue);
 }
 
+.button:disabled {
+  box-shadow: none;
+  border-color: var(--purple)
+}
+
 .button:active {
   outline: none;
   box-shadow: none;
@@ -96,14 +101,21 @@ select:invalid:focus {
   outline: none;
   border: none;
   text-decoration: none;
-  color: transparent;
+  color: var(--white);
 } 
+
+.no-link:hover {
+  color: var(--white);
+}
 
 .fs-100 {
   font-size: 6vw;
 }
+.fs-50 {
+  font-size: 4vw;
+}
 
-.gradient-text-shadow {
+.gradient-text-shadow-button {
   color: transparent;
   background: var(--gradient);
   background-clip: text;
@@ -111,12 +123,20 @@ select:invalid:focus {
   text-shadow: var(--white) -5px -4px 0px; 
 }
 
-.gradient-text-shadow:hover {
+.gradient-text-shadow-button:hover {
   text-shadow: var(--white) -3px -3px 0px;
 }
 
-.gradient-text-shadow:active {
+.gradient-text-shadow-button:active {
   text-shadow: var(--white) 0px 0px 0px;
+}
+
+.gradient-text-shadow {
+  color: transparent;
+  background: var(--gradient);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: var(--white) -4px -4px 0px;
 }
 
 .gradient-text {
@@ -124,6 +144,11 @@ select:invalid:focus {
   background: var(--gradient2);
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-underline {
+  border-bottom: 4px solid;
+  border-image: var(--gradient) 1;
 }
 
 /* Login / Signup Styles */
@@ -140,4 +165,27 @@ select:invalid:focus {
 
 .navbarText {
   font-size: 1.6vw;
+}
+
+.productCardImage {
+  float: left;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    padding: 0;
+}
+
+.productImage{
+float: left;
+  max-height: 40vh;
+  object-fit: contain;
+  padding: 0;
+  box-shadow: 1px 1px 20px var(--light-blue);
+    border: 5px solid;
+    border-image: var(--gradient2) 1;
+    border-radius: 10px;
+}
+
+.backgroundGradient {
+  background-image: var(--gradient);
 }

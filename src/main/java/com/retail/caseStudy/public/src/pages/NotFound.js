@@ -15,7 +15,7 @@ const NotFound = () => {
             </Row>
             <Row >
                 <div className="d-flex justify-content-center">
-                    <button type="button" className="button" onClick={() => window.location.replace("/")}>Go back to Listings</button>
+                    <button type="button" className="button" onClick={() => window.location.replace("/")}>Return to home page</button>
                 </div>
             </Row>
         </Container>
