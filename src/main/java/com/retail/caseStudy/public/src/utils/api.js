@@ -78,3 +78,14 @@ export const addToCart = (quantity, product, jwt) => {
         body: JSON.stringify(product)
     });
 }
+
+export const getCart = (jwt) => {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + jwt
+    });
+    return fetch('/api/v1/user/cart', {
+        method: "GET",
+        headers: headers
+    })
+}

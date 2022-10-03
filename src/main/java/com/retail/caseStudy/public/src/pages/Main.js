@@ -78,7 +78,6 @@ function Main() {
                window.location = "/login";
             } else alert("An unknown error has occurred, please try again later!");
         } else alert("An unknown error has occurred, please try again later!");
-
     }
 
     useEffect(() => {

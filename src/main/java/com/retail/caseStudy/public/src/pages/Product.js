@@ -47,7 +47,8 @@ function Product() {
                         <Col xs={8} className="loginDiv me-auto">
                             <div className="d-flex justify-content-start align-items-center">
                                 <p className="text-bolder fs-50 vermin m-0">${productInfo.price}</p>
-                                <p className="text-bold fs-4 mb-1 ms-auto">{productInfo.quantity <= 0 ? "Out of Stock" : productInfo.quantity + " Available"}</p>
+                                <p className="text-bold fs-4 mb-1 ms-auto">{productInfo.quantity <= 0 ? "Out of Stock" : 
+                                    productInfo.quantity + " Available"}</p>
                             </div>
                         </Col>
                         <Col xs={3} className="loginDiv d-flex justify-content-center ms-auto p-0">

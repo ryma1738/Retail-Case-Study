@@ -23,6 +23,7 @@ function Navigator() {
         e.preventDefault();
         localStorage.removeItem("jwtCaseStudy");
         getJWT();
+        window.location = "/";
     }
 
     useEffect(() => {

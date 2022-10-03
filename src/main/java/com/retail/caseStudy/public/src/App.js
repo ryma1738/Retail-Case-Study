@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Forgot from "./pages/Forgot";
 import Product from "./pages/Product";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -19,6 +20,7 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot' element={<Forgot />} />
         <Route path='/product/:productId' element={<Product />} />
+        <Route path='/cart' element={<Cart />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
