@@ -95,6 +95,12 @@ public class OrderController {
         }).reduce((price, sum) -> sum.add(price)).get();
         BigDecimal total = subTotal.add(subTotal.multiply(BigDecimal.valueOf(0.1)));
         Order order = orderRep.save(new Order(cart.getProducts(), OrderStatus.ORDER_PLACED, user, total));
+        cart.getProducts().forEach((id, quantity)-> {
+            Product product = prodRep.findById(id).get();
+            int currentQuantity = product.getQuantity() - quantity;
+            product.setQuantity(currentQuantity);
+            prodRep.save(product);
+        });
         cart.setProducts(new HashMap<Long, Integer>());
         cart.setSubtotal(BigDecimal.valueOf(0));
         cartRep.save(cart);
@@ -121,6 +127,14 @@ public class OrderController {
             if (order.getStatus().equals(OrderStatus.SHIPPING) || order.getStatus().equals(OrderStatus.COMPLETE))
                 throw new BadRequestException("You can not cancel " +
                         "an order that has already shipped. Please contact site Support");
+            else {
+                order.getProducts().forEach((id, quantity)-> {
+                    Product product = prodRep.findById(id).get();
+                    int currentQuantity = product.getQuantity() + quantity;
+                    product.setQuantity(currentQuantity);
+                    prodRep.save(product);
+                });
+            }
         }
         order.setStatus(status);
         orderRep.save(order);
