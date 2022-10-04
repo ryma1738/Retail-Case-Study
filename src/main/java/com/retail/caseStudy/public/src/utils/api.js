@@ -89,3 +89,48 @@ export const getCart = (jwt) => {
         headers: headers
     })
 }
+
+export const createOrder = (jwt) => {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + jwt
+    });
+    return fetch('/api/v1/order', {
+        method: "POST",
+        headers: headers
+    })
+}
+
+export const getOrders = (jwt) => {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + jwt
+    });
+    return fetch('/api/v1/order', {
+        method: "GET",
+        headers: headers
+    })
+}
+
+export const getOrder = (id, jwt) => {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + jwt
+    });
+    return fetch('/api/v1/order/' + id, {
+        method: "GET",
+        headers: headers
+    })
+}
+
+export const updateOrder = (id, status, jwt) => {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + jwt
+    });
+    return fetch('/api/v1/order/' + id + "/" + status, {
+        method: "PUT",
+        headers: headers
+    })
+}
+

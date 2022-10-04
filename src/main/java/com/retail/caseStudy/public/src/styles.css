@@ -176,7 +176,7 @@ select:invalid:focus {
 }
 
 .productImage{
-float: left;
+  float: left;
   max-height: 40vh;
   object-fit: contain;
   padding: 0;
@@ -188,4 +188,22 @@ float: left;
 
 .backgroundGradient {
   background-image: var(--gradient);
+}
+
+.ordersCardImage {
+  float: left;
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  padding: 0;
+}
+
+.ordersImagesBorder {
+  border-left: 4px solid;
+  border-image: var(--gradient) 1;
+}
+
+.ordersImagesBorder2 {
+  border-right: 4px solid;
+  border-image: var(--gradient) 1;
 }

@@ -13,6 +13,8 @@ function Navigator() {
             setNavbar((<p className="my-0"><a href="/login" className="text-decoration-none text-link">Login or Signup</a></p>));
         else setNavbar((
         <div className="d-flex">
+            <p className="my-0"><a href="/orders" className="text-link text-decoration-none">Orders</a></p>
+            <p className="my-0 mx-3 gradient-text fw-bolder">|</p>
             <p className="my-0"><a href="/cart" className="text-link text-decoration-none">Cart</a></p>
             <p className="my-0 mx-3 gradient-text fw-bolder">|</p>
             <p className="my-0 text-link" onClick={(e) => logout(e)}>Logout</p>

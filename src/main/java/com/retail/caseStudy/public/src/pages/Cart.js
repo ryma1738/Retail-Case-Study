@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Container, Row, Col} from "react-bootstrap";
-import {getCart, getProduct, addToCart} from "../utils/api";
+import {getCart, getProduct, addToCart, createOrder} from "../utils/api";
 
 function Cart() {
     const [cart, setCart] = useState();
@@ -15,12 +15,12 @@ function Cart() {
             setCart(data);
             if(data.products.length == 0) {
                 setProductCards((
-                    <Col xs={12}>
+                    <Col xs={12} key="Empty">
                         <h1 className="text-center">Your cart is Empty</h1>
                     </Col>
                 ));
                 setSubtotalHTML((
-                    <Row className="gradient-text-underline pb-1">
+                    <Row className="gradient-text-underline pb-1" key="Cart">
                         <Col xs={12}>
                             <h2 className="text-center">Your cart is Empty</h2>
                         </Col>
@@ -58,7 +58,7 @@ function Cart() {
                     </Col>
                 )));
                 setSubtotalHTML(data.products.map(productInfo => (
-                    <Row className="gradient-text-underline pb-1">
+                    <Row className="gradient-text-underline pb-1" key={productInfo.product.id}>
                         <Col xs={8} className="mt-2">
                             <p className="m-0">{productInfo.product.name} x {productInfo.quantity}: </p>
                         </Col>
@@ -70,7 +70,17 @@ function Cart() {
                 )));
             }
             
-        } else console.log(response)
+        } else if (response.status === 400) {
+            const errorMessage = await response.json()
+            alert(errorMessage.message);
+            window.location = "/";
+        } else if (response.status === 401) {
+            localStorage.removeItem("jwtCaseStudy");
+            window.location = "/login";
+        } else {
+            alert("An unknown error has occurred, please try again later!");
+            window.location = "/";
+        }
     }
 
     async function attemptUpdateCart(e) {
@@ -107,8 +117,23 @@ function Cart() {
         } else alert("An unknown error has occurred, please try again later!");
     }
 
-    function attemptPlaceOrder(e) {
+    async function attemptPlaceOrder(e) {
         e.preventDefault();
+        if (window.confirm("Are you sure you want to order these items?") === true) {
+            const response = await createOrder(localStorage.getItem("jwtCaseStudy"));
+            console.log(response.status);
+            if (response.ok) {
+                alert("Your order was created successfully! Please go to your orders tab to view the order.");
+                initialLoad();
+            } else if (response.status === 400) {
+                const errorMessage = await response.json()
+                alert(errorMessage.message + " : Order was not Created")
+            } else if (response.status === 401) {
+                localStorage.removeItem("jwtCaseStudy");
+                window.location = "/login";
+            } else alert("An unknown error has occurred, please try again later!");
+        } else alert("Order creation canceled!");
+
     }
 
 
