@@ -1,7 +1,9 @@
 package com.retail.caseStudy.util;
 
 import com.retail.caseStudy.product.Product;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class UsersCartInfo {
 
     private Product product;

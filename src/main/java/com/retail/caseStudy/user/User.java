@@ -35,7 +35,7 @@ public class User {
     private Cart cart;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Order> orders;
 
     @JsonIgnore

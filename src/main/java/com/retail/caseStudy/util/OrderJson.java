@@ -2,11 +2,14 @@ package com.retail.caseStudy.util;
 
 import com.retail.caseStudy.order.OrderStatus;
 import com.retail.caseStudy.user.User;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import java.util.List;
 
+@NoArgsConstructor
 public class OrderJson {
 
     private Long id;

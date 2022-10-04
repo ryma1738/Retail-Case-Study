@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-public class ProductControllerTest {
+public class ProductServiceTest {
 
     @Autowired
     ProductService productService;

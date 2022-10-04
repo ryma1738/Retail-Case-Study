@@ -136,10 +136,6 @@ public class OrderService {
         return ResponseEntity.ok().build();
     }
 
-
-
-
-
     private User confirmUser(String email) {
         Optional<User> confirm = userRep.findByEmail(email);
         if(confirm.isPresent()) return confirm.get();
