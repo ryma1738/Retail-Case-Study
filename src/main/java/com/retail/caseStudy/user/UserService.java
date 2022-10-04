@@ -117,7 +117,7 @@ public class UserService  {
         User savedUser = userRep.save(user);
         String token = jwtUtil.generateToken(user.getEmail());
 
-        Cart savedCart = cartRep.save(new Cart(savedUser));
+        Cart savedCart = cartRep.save(new Cart(savedUser, new HashMap<Long, Integer>(), BigDecimal.valueOf(0)));
         savedUser.setCart(savedCart);
         userRep.save(savedUser);
 

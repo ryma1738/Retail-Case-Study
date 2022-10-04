@@ -55,7 +55,7 @@ public class UserController {
         return userService.createUser(signupInfo);
     }
 
-    @PutMapping("/user")
+    @PutMapping("/user") //need authentication
     public ResponseEntity<Object> updateUser(@RequestBody  User user) {
         return userService.updateUser(user);
     }

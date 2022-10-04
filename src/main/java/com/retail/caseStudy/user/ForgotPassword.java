@@ -19,13 +19,13 @@ public class ForgotPassword {
     private Long id;
 
     @NonNull
-    private long usersId;
+    private long userId;
 
     @NonNull
     private int keyValue;
 
     public ForgotPassword(Long userId, int key){
-        this.usersId = userId;
+        this.userId = userId;
         this.keyValue = key;
     }
 }

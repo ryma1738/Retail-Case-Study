@@ -30,8 +30,10 @@ public class Cart {
 
     private BigDecimal subtotal;
 
-    public Cart(User user) {
+    public Cart(User user, HashMap<Long, Integer> products, BigDecimal subtotal) {
         this.user = user;
+        this.products = products;
+        this.subtotal = subtotal;
     }
 
     public Cart() {}

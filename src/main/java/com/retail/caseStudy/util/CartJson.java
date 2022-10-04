@@ -1,8 +1,11 @@
 package com.retail.caseStudy.util;
 
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.List;
 
+@NoArgsConstructor
 public class CartJson {
     private List<UsersCartInfo> products;
     private BigDecimal subTotal;
