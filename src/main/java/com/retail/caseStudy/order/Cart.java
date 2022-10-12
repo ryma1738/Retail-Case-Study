@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Entity
-
 public class Cart {
 
     @Id
